@@ -3,14 +3,29 @@ import { NgModule } from '@angular/core';
 
 
 import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app-routing.module';
+import { IonRangeSliderModule } from "ng2-ion-range-slider";
+import { AddUserComponent } from './user/add-user/add-user.component';
+import { AddProjectComponent } from './project/add-project/add-project.component';
+import { NgxMyDatePickerModule } from 'ngx-mydatepicker';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AddTaskComponent } from './task/add-task/add-task.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    AddUserComponent,
+    AddProjectComponent,
+    AddTaskComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    AppRoutingModule,
+    IonRangeSliderModule,
+    NgxMyDatePickerModule.forRoot(),
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
