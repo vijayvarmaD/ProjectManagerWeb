@@ -146,7 +146,7 @@ export class AddProjectComponent implements OnInit  {
         this.selectedManagerId = userId;
         this.mgrName = mgrName;
         this.addProjectForm.patchValue({
-            selectedManagerControl: empId
+            selectedManagerControl: userId
         });
     }
 

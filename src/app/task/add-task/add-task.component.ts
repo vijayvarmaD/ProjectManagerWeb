@@ -33,43 +33,69 @@ export class AddTaskComponent implements OnInit {
         { userId: 2, firstName:'john', lastName: 'doe', employeeId: 234, projectId: 2, taskId: 2},
     ];
     private myForm: FormGroup;
+    private addTaskForm: FormGroup;
 
     constructor(private formBuilder: FormBuilder) { }
 
     ngOnInit() {
-        this.myForm = this.formBuilder.group({
-            myDate: [null, Validators.required]
+        // this.myForm = this.formBuilder.group({
+        //     myDate: [null, Validators.required]
+        // });
+
+        this.addTaskForm = this.formBuilder.group({
+            ProjectIdControl: [null, Validators.required],
+            TaskNameControl: [null, Validators.required],
+            IsParentTaskControl: [null],
+            PriorityControl: [null, Validators.required],
+            PriorityDisplayControl: [null],
+            ParentTaskControl: [null],
+            StartDateControl: [null, Validators.required],
+            EndDateControl: [null, Validators.required],
+            UserIdControl: [null]
         });
     }
 
     setDate(): void {
         // Set today date using the patchValue function
         let date = new Date();
-        this.myForm.patchValue({myDate: {
-        date: {
-            year: date.getFullYear(),
-            month: date.getMonth() + 1,
-            day: date.getDate()}
-        }});
+        // this.myForm.patchValue({myDate: {
+        // date: {
+        //     year: date.getFullYear(),
+        //     month: date.getMonth() + 1,
+        //     day: date.getDate()}
+        // }});
     }
 
     clearDate(): void {
         // Clear the date using the patchValue function
-        this.myForm.patchValue({myDate: null});
+        // this.myForm.patchValue({myDate: null});
     }
 
     selectProject(projectName, projectId) {
         this.selectedProjectId = projectId;
         this.selectedProject = projectName;
+        this.addTaskForm.patchValue({
+            UserIdControl: projectId
+        });
     }
 
     assignUser(userId, userName) {
         this.selectedUserId = userId;
         this.selectedUser =userName;
+        this.addTaskForm.patchValue({
+            ProjectIdControl: userId
+        });
     }
 
     selectPTask(pTaskName, pTaskId) {
         this.selectedPTaskId = pTaskId;
         this.selectedTask = pTaskName;
+        this.addTaskForm.patchValue({
+            ParentTaskControl: pTaskId
+        });
+    }
+
+    addTaskSubmit() {
+        console.log(this.addTaskForm);
     }
 }

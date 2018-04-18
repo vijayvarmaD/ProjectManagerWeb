@@ -18,9 +18,11 @@ export class ViewTaskComponent  {
     ];
 
     selectedProject: String;
+    selectedProjectId: Number;
 
-    assignProject(projName) {
+    assignProject(projName, projId) {
+        this.selectedProjectId = projId;
         this.selectedProject = projName;
-        // call service to get tasks for the project
+        // call service to get tasks for the project & assign to tasksList
     }
 }

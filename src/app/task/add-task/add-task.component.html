@@ -5,12 +5,13 @@
                 <h3 class="panel-title">Add Task</h3>
             </div>
             <div class="panel-body">
+                <form [formGroup]="addTaskForm" (ngSubmit)="addTaskSubmit()" novalidate>
                 <div class="row">
                     <div class="col-md-3"></div>
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="empId">Project:</label>
                         <div class="col-sm-6">
-                            <input class="form-control" id="project" placeholder="Select the Project" readonly value="{{selectedProject}}">
+                            <input class="form-control" id="project" placeholder="Select the Project" readonly value="{{selectedProject}}" formControlName="ProjectIdControl">
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchProjectsModal">Search</button>
@@ -23,7 +24,7 @@
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="task">Task:</label>
                         <div class="col-sm-8">
-                            <input class="form-control" id="task" placeholder="Enter task name">
+                            <input class="form-control" id="task" placeholder="Enter task name" formControlName="TaskNameControl">
                         </div>
                     </div>
                     <div class="col-md-3"></div>
@@ -33,7 +34,7 @@
                     <div class="col-md-6">
                         <div class="checkbox checkbox-padding">
                             <label>
-                                <input type="checkbox" value="">Parent Task</label>
+                                <input type="checkbox" value="" name="IsParentTaskControl" formControlName="IsParentTaskControl">Parent Task</label>
                         </div>
                     </div>
                     <div class="col-md-1"></div>
@@ -62,13 +63,13 @@
                                 </div>
                                 <div class="col-sm-7">
                                     <div class="middleVert"></div>
-                                    <p-slider [min]="0" [max]="30" [step]="1" [style]="{'width':'200px'}"></p-slider>
+                                    <p-slider formControlName="PriorityControl" [min]="0" [max]="30" [step]="1" [style]="{'width':'200px'}"></p-slider>
                                 </div>
                                 <div class="col-sm-1">
                                     <h4 class="middleVert1">30</h4>
                                 </div>
                                 <div class="col-sm-3">
-                                    <input class="form-control" readonly >
+                                    <input class="form-control" readonly formControlName="PriorityDisplayControl"  value="{{addTaskForm.controls.PriorityControl.value}}">
                                 </div>
                             </div>
                         </div>
@@ -91,7 +92,7 @@
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="pTask">Parent Task:</label>
                         <div class="col-sm-6">
-                            <input class="form-control" id="pTask" placeholder="Select the Parent Task" readonly  value="{{selectedTask}}">
+                            <input class="form-control" id="pTask" placeholder="Select the Parent Task" readonly  value="{{selectedTask}}" formControlName="ParentTaskControl">
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchPTasksModal">Search</button>
@@ -104,46 +105,39 @@
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="startDate">Start Date:</label>
                         <div class="col-md-8">
-                            <form [formGroup]="myForm" (ngSubmit)="onSubmit()" novalidate>
-                                <div class="input-group" [formGroup]="myForm">
-                                    <input class="form-control" style="float:none" placeholder="Select a date" ngx-mydatepicker name="myDate" formControlName="myDate"
-                                        [options]="myOptions" #dp="ngx-mydatepicker" />
-                                    <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" (click)="dp.clearDate()">
-                                            <i class="glyphicon glyphicon-remove"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" (click)="dp.toggleCalendar()">
-                                            <i class="glyphicon glyphicon-calendar"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                                <!-- <div class="btnGroup">
-                                    <button class="button" type="submit" [disabled]="myForm.controls.myDate.errors">Submit</button>
-                                    <p class="error" *ngIf="myForm.controls.myDate.errors">Date is required!</p>
-                                </div> -->
-                            </form>
+                            <div class="input-group">
+                                <input class="form-control" style="float:none" placeholder="Select a date" ngx-mydatepicker name="StartDateControl" formControlName="StartDateControl"
+                                    [options]="myOptions" #dp1="ngx-mydatepicker" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" (click)="dp1.clearDate()">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-default" (click)="dp1.toggleCalendar()">
+                                        <i class="glyphicon glyphicon-calendar"></i>
+                                    </button>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
                 <div class="row">
                     <div class="col-md-3"></div>
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="endDate">End Date:</label>
                         <div class="col-md-8">
-                            <form [formGroup]="myForm" (ngSubmit)="onSubmit()" novalidate>
-                                <div class="input-group" [formGroup]="myForm">
-                                    <input class="form-control" style="float:none" placeholder="Select a date" ngx-mydatepicker name="myDate" formControlName="myDate"
-                                        [options]="myOptions" #dp="ngx-mydatepicker" />
-                                    <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" (click)="dp.clearDate()">
-                                            <i class="glyphicon glyphicon-remove"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-default" (click)="dp.toggleCalendar()">
-                                            <i class="glyphicon glyphicon-calendar"></i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </form>
+                            <div class="input-group">
+                                <input class="form-control" style="float:none" placeholder="Select a date" ngx-mydatepicker name="EndDateControl" formControlName="EndDateControl"
+                                    [options]="myOptions" #dp="ngx-mydatepicker" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" (click)="dp.clearDate()">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-default" (click)="dp.toggleCalendar()">
+                                        <i class="glyphicon glyphicon-calendar"></i>
+                                    </button>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3"></div>
@@ -153,7 +147,7 @@
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="user">User:</label>
                         <div class="col-sm-6">
-                            <input class="form-control" id="user" placeholder="Select a user" readonly  value="{{selectedUser}}">
+                            <input class="form-control" id="user" placeholder="Select a user" readonly  value="{{selectedUser}}" formControlName="UserIdControl">
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchUsersModal">Search</button>
@@ -166,12 +160,13 @@
                     <div class="form-group col-md-6">
                         <div class="col-md-4"></div>
                         <div class="col-md-8">
-                            <button type="button" class="btn btn-md btn-success">Add</button>
+                            <button type="submit" class="btn btn-md btn-success">Add</button>
                             <button type="button" class="btn btn-md btn-danger">Reset</button>
                         </div>
                     </div>
                     <div class="col-md-3"></div>
                 </div>
+                </form>
             </div>
         </div>
     </div>
@@ -195,6 +190,7 @@
                             <p-column field="startDate" header="Start Date" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                             <p-column field="endDate" header="End Date" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                             <p-column field="priority" header="Priority" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="managerName" header="Manager" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>                            
                             <p-column>
                                 <ng-template let-project="rowData" pTemplate="body">
                                     <div align="center">
