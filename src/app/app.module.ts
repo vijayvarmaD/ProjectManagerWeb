@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 import { AppComponent } from './app.component';
@@ -14,6 +15,12 @@ import { ViewTaskComponent } from './task/view-task/view-task.component';
 
 import { DataTableModule } from 'primeng/datatable';
 import { SliderModule } from 'primeng/slider';
+import { GrowlModule } from 'primeng/growl';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+
+import { Interceptor, fakeBackendProvider } from './interceptor/interceptor';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AddUserService } from './user/add-user/add-user.service';
 
 
 @NgModule({
@@ -32,9 +39,15 @@ import { SliderModule } from 'primeng/slider';
     FormsModule,
     ReactiveFormsModule,
     DataTableModule,
-    SliderModule
+    SliderModule,
+    GrowlModule,
+    BrowserAnimationsModule,
+    ConfirmDialogModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    AddUserService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

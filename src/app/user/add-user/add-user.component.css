@@ -4,9 +4,11 @@
 
 .row-right {
     text-align: right;
-    padding-right: 3%;
 }
 
-.text-danger {
-    color: red;
-}
+.error {
+    font-size: 13px;
+    color: #c7254e;
+    margin-left: 10px;
+    margin-bottom: 10px;
+  }

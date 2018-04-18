@@ -1,57 +1,100 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserModel } from '../../utilities/model';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AddUserService } from './add-user.service';
+import { Users } from '../../entities/users';
+import { Message } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
+import { NgForm } from '@angular/forms/src/directives/ng_form';
 
 @Component({
     templateUrl: './add-user.component.html',
-    styleUrls: ['./add-user.component.css']
+    styleUrls: ['./add-user.component.css'],
+    providers: [AddUserService, ConfirmationService]
 })
 
 export class AddUserComponent implements OnInit {
-    public addOrUpdateBtn: string = 'Add';
-    private addUserForm: FormGroup;
-    private usersList: UserModel[] = [
-        { userId: 1, firstName:'vijay', lastName: 'varma', employeeId: 345, projectId: 1, taskId: 1},
-        { userId: 2, firstName:'john', lastName: 'doe', employeeId: 234, projectId: null, taskId: 2},
-    ];
+    @ViewChild('f') form;
+    cd: any;
+    msgs: Message[] = [];
+    userList: Users[];
+    currentUser: Users;
+    saveButtonString: String;
+    status:boolean;
+    _confirmationService: ConfirmationService
+    constructor(private service: AddUserService, private confirmationService: ConfirmationService) {
+        this._confirmationService=confirmationService;
+     }
 
-    constructor(private formBuilder: FormBuilder) {}
 
-    ngOnInit() {
-        this.addUserForm = this.formBuilder.group({
-            firstNameControl: [null, Validators.required],
-            lastNameControl: [null, Validators.required],
-            empIdControl: [null, Validators.required]
-        });
+    ngOnInit(): void {
+        this.saveButtonString = "Add";
+        this.onReset();
+
+        this.getUsers();
     }
 
-    // addUser - FormGroup
-    addUserSubmit() {
-        console.log(this.addUserForm);
-    }
+    onReset() {
+        this.saveButtonString = "Add";
 
-    addUserReset() {
-        this.addUserForm.reset();
-        this.addOrUpdateBtn = 'Add';
+        this.currentUser = { User_ID: 0, Employee_ID: "", First_Name: "", Last_Name: "" };
+        this.form.reset();
     }
+   
+     onEditClick(user: Users) {
+        this.saveButtonString = "Edit";
 
-    editUser(userId) {
-        let selectedUser = null;
-        this.usersList.forEach(user => {
-            if (user.userId == userId) {
-                selectedUser = user;
-            }
-        });
-        this.addOrUpdateBtn = 'Update';
-        this.addUserForm.reset();
-        this.addUserForm.setValue({
-            firstNameControl: selectedUser.firstName,
-            lastNameControl: selectedUser.lastName,
-            empIdControl: selectedUser.employeeId
-        });
+        this.currentUser = Object.assign({}, this.currentUser, user);
     }
-
-    deleteUser(empId) {
+    onSave(user: Users) {
+        //  this.currentUser = user;
         
+        this.updateUser(this.currentUser);
+      
     }
+    
+    updateUser(user: Users) {
+        
+
+        this.service.updateUsers(user)
+            .subscribe(data => {
+              
+                this.showMessage(data.status.Result,data.status.Message);
+                
+            });
+
+    }
+    showMessage(status: boolean, message: string) {
+        this.msgs=[];
+        if (status === true) {
+            this.msgs.push({ severity: 'success', summary: "Success", detail: message});
+        }
+        else {
+            this.msgs.push({ severity: 'error', summary: "Error", detail: message });
+
+        }
+        this.getUsers();
+        this.onReset();
+
+    }
+    getUsers() {
+        this.service.getUsers()
+            .subscribe(data => {  this.userList = data; });
+    }
+
+    confirmDelete(user: Users) {
+
+        this.confirmationService.confirm({
+            message: 'Are you sure that you want to delete user : ' + user.Employee_ID + '?',
+            accept: () => {
+                this.service.deleteUser(user)
+                .subscribe(data => {
+                    this.showMessage(data.Result,data.Message);
+                });            }
+        });
+    }
+
+   
+
+
+
+
 }
