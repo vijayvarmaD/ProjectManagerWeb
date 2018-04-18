@@ -8,13 +8,13 @@ import { TaskModel, ProjectModel } from '../../utilities/model';
 
 export class ViewTaskComponent  {
     tasksList: TaskModel[] = [
-        { taskName: 'task 1', parentTask: 'p task1', priority: 25 , startDate: '02/03/2018' , endDate: '02/03/2018'},
-        { taskName: 'task 2', parentTask: 'p task1', priority: 22 , startDate: '02/03/2018' , endDate: '02/03/2018'},
+        { taskId: 1, parentId: 1, projectId: 1, task: 'task 1', priority: 25 , startDate: '02/03/2018' , endDate: '02/03/2018', status: 'completed'},
+        { taskId: 1, parentId: 1, projectId: 1, task: 'task 2', priority: 22 , startDate: '02/03/2018' , endDate: '02/03/2018', status: 'completed'},
     ];
 
     projectsList: ProjectModel[] = [
-        { projectName:'proj1', totalTasks: 1, startDate: '02/03/2018', endDate: '03/03/2018', completed: 'completed', priority: 24, manager: 345},
-        { projectName:'proj2', totalTasks: 1, startDate: '02/03/2018', endDate: '03/03/2018', completed: 'completed', priority: 12, manager: 234},
+        { projectId: 1, project:'proj1', startDate: '02/03/2018', endDate: '03/03/2018', priority: 24, manager: 2, managerName: 'john doe'},
+        { projectId: 2, project:'proj2', startDate: '02/03/2018', endDate: '03/03/2018', priority: 12, manager: 1, managerName: 'vijay varma'},
     ];
 
     selectedProject: String;

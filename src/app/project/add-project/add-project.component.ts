@@ -10,8 +10,8 @@ import { ProjectModel, UserModel } from '../../utilities/model';
 
 export class AddProjectComponent implements OnInit  {
     projectsList: ProjectModel[] = [
-        { projectName:'proj1', totalTasks: 1, startDate: '02/03/2018', endDate: '03/03/2018', completed: 'completed', priority: 24, manager: 345},
-        { projectName:'proj2', totalTasks: 1, startDate: '02/03/2018', endDate: '03/03/2018', completed: 'completed', priority: 12, manager: 234},
+        { projectId: 1, project:'proj1', startDate: '02/03/2018', endDate: '03/03/2018', priority: 24, manager: 2, managerName: 'john doe'},
+        { projectId: 2, project:'proj2', startDate: '02/03/2018', endDate: '03/03/2018', priority: 12, manager: 1, managerName: 'vijay varma'},
     ];
     usersList: UserModel[] = [
         { userId: 1, firstName:'vijay', lastName: 'varma', employeeId: 345, projectId: 1, taskId: 1},
@@ -21,7 +21,11 @@ export class AddProjectComponent implements OnInit  {
         dateFormat: 'dd/mm/yyyy',
     };
     public addOrUpdateBtn: string = 'Add';
+
+    // selection variables - for holding selected values from view list
     mgrName: string = null;
+    selectedManagerId: string = '';
+    selectedProjectId: Number = null;
 
     private addProjectForm: FormGroup;
 
@@ -44,7 +48,6 @@ export class AddProjectComponent implements OnInit  {
 
     addProjectSubmit() {
         console.log(this.addProjectForm);
-        
     }
 
     addProjectReset() {
@@ -56,7 +59,7 @@ export class AddProjectComponent implements OnInit  {
         let selectedProject = null;
         let dateCheckBox = true;
         this.projectsList.forEach(proj => {
-            if (proj.projectName == projName) {
+            if (proj.project == projName) {
                 selectedProject = proj;
             }
         });
@@ -66,7 +69,7 @@ export class AddProjectComponent implements OnInit  {
             dateCheckBox =  false;
         }
         this.addProjectForm.setValue({
-            projectNameControl: selectedProject.projectName,
+            projectNameControl: selectedProject.project,
             checkDatesControl: dateCheckBox,
             startDateControl: null,
             endDateControl: null,
@@ -76,6 +79,8 @@ export class AddProjectComponent implements OnInit  {
         });
         this.setDate(selectedProject.startDate, 'startDateControl');
         this.setDate(selectedProject.endDate, 'endDateControl');
+        // selection varaible
+        this.selectedProjectId = selectedProject.projectId;
         
     }
 
@@ -137,11 +142,16 @@ export class AddProjectComponent implements OnInit  {
     }
    
 
-    assignManager(mgrName , empId) {
+    assignManager(userId, mgrName, empId) {
+        this.selectedManagerId = userId;
         this.mgrName = mgrName;
         this.addProjectForm.patchValue({
             selectedManagerControl: empId
         });
+    }
+
+    suspendProject(projId) {
+
     }
 
 }

@@ -21,8 +21,8 @@ export class AddTaskComponent implements OnInit {
         dateFormat: 'dd/mm/yyyy',
     };
     projectsList: ProjectModel[] = [
-        { projectId: 1, project:'proj1', startDate: '02/03/2018', endDate: '03/03/2018', priority: 24},
-        { projectId: 2, project:'proj2', startDate: '02/03/2018', endDate: '03/03/2018', priority: 12},
+        { projectId: 1, project:'proj1', startDate: '02/03/2018', endDate: '03/03/2018', priority: 24, manager: 2, managerName: 'john doe'},
+        { projectId: 2, project:'proj2', startDate: '02/03/2018', endDate: '03/03/2018', priority: 12, manager: 1, managerName: 'vijay varma'},
     ];
     parentTasksList: ParentTaskModel[] = [
         { parentId: 1, parentTask: 'p-task1' },

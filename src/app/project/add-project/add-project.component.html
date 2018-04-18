@@ -144,16 +144,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <p-dataTable [value]="projectsList">
-                            <p-column field="projectName" header="Project" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="totalTasks" header="No.of.tasks" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="projectId" header="Project ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="project" header="Project Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                             <p-column field="startDate" header="Start Date" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                             <p-column field="endDate" header="End Date" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="completed" header="Completed" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                             <p-column field="priority" header="Priority" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="manager" header="Priority" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>                            
                             <p-column>
                                 <ng-template let-project="rowData" pTemplate="body">
-                                    <button type="button" class="btn btn-primary btn-sm" (click)="updateProject(project.projectName)">Update</button>
-                                    <button type="button" class="btn btn-danger btn-sm" (click)="suspendProject(project.projectName)">Suspend</button>
+                                    <button type="button" class="btn btn-primary btn-sm" (click)="updateProject(project.project)">Update</button>
+                                    <button type="button" class="btn btn-danger btn-sm" (click)="suspendProject(project.projectId)">Suspend</button>
                                 </ng-template>
                             </p-column>
                         </p-dataTable>
@@ -178,13 +178,13 @@
                         <div class="col-md-1"></div>
                         <div class="col-md-10">
                             <p-dataTable [value]="usersList">
-                                <p-column field="sNo" header="sNo" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                                <p-column field="userId" header="User ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                                 <p-column field="firstName" header="First Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                                 <p-column field="lastName" header="Last Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                                 <p-column field="employeeId" header="Employee ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                                 <p-column>
                                     <ng-template let-user="rowData" pTemplate="body">
-                                        <button type="button" class="btn btn-success btn-sm" id="assignManager" (click)="assignManager(user.firstName + ' ' + user.lastName, user.employeeId)"
+                                        <button type="button" class="btn btn-success btn-sm" id="assignManager" (click)="assignManager(user.userId, user.firstName + ' ' + user.lastName, user.employeeId)"
                                             data-dismiss="modal">Assign</button>
                                     </ng-template>
                                 </p-column>

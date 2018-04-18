@@ -13,6 +13,8 @@ export interface ProjectModel {
     startDate: String
     endDate: String
     priority: Number
+    manager: Number
+    managerName: String
 }
 
 export interface TaskModel {
