@@ -4,4 +4,9 @@
 
 .row-right {
     text-align: right;
+    padding-right: 3%;
+}
+
+.text-danger {
+    color: red;
 }

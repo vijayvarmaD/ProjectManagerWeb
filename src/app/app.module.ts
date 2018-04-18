@@ -10,6 +10,10 @@ import { AddProjectComponent } from './project/add-project/add-project.component
 import { NgxMyDatePickerModule } from 'ngx-mydatepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddTaskComponent } from './task/add-task/add-task.component';
+import { ViewTaskComponent } from './task/view-task/view-task.component';
+
+import { DataTableModule } from 'primeng/datatable';
+import { SliderModule } from 'primeng/slider';
 
 
 @NgModule({
@@ -17,7 +21,8 @@ import { AddTaskComponent } from './task/add-task/add-task.component';
     AppComponent,
     AddUserComponent,
     AddProjectComponent,
-    AddTaskComponent
+    AddTaskComponent,
+    ViewTaskComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +30,9 @@ import { AddTaskComponent } from './task/add-task/add-task.component';
     IonRangeSliderModule,
     NgxMyDatePickerModule.forRoot(),
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    DataTableModule,
+    SliderModule
   ],
   providers: [],
   bootstrap: [AppComponent]
