@@ -43,7 +43,7 @@ export class AddProjectComponent implements OnInit  {
             selectedManagerControl: [null, Validators.required],
             priorityDisplayControl: [null]
         });  
-        console.log(this.addProjectForm);  
+        // console.log(this.addProjectForm);  
     }
 
     addProjectSubmit() {

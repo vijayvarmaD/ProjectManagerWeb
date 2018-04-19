@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { TaskModel, ProjectModel } from '../../utilities/model';
+import { AddTaskComponent } from '../add-task/add-task.component';
+import { Router } from '@angular/router';
+import { DataService } from '../../utilities/data.service';
 
 @Component({
     templateUrl: './view-task.component.html',
@@ -20,9 +23,28 @@ export class ViewTaskComponent  {
     selectedProject: String;
     selectedProjectId: Number;
 
+    constructor(private router: Router,private dataService: DataService) {}
+
     assignProject(projName, projId) {
         this.selectedProjectId = projId;
         this.selectedProject = projName;
         // call service to get tasks for the project & assign to tasksList
+    }
+
+    editTask(taskId) {
+        this.router.navigate(['/edittask']);
+        // this.dataService.changeMessage("Hello from Sibling");
+        let taskBlock = null;
+        this.tasksList.forEach(task => {
+            if (taskId === task.taskId) {
+                let selectedTask = task;
+                taskBlock = task;
+                taskBlock.formMode = 'Edit Task';
+                taskBlock.btnMode = 'Update';
+                taskBlock.selectedProject = this.selectedProject;
+                taskBlock.selectedProjectId = this.selectedProjectId;
+            }
+        });
+        this.dataService.sendTaskBlock(taskBlock);
     }
 }

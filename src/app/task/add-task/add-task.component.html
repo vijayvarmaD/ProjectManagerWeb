@@ -2,7 +2,7 @@
     <div class="row">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Add Task</h3>
+                <h3 class="panel-title">{{formMode}}</h3>
             </div>
             <div class="panel-body">
                 <form [formGroup]="addTaskForm" (ngSubmit)="addTaskSubmit()" novalidate>
@@ -14,7 +14,7 @@
                             <input class="form-control" id="project" placeholder="Select the Project" readonly value="{{selectedProject}}" formControlName="ProjectIdControl">
                         </div>
                         <div class="col-sm-2">
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#searchProjectsModal">Search</button>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" [disabled]="formMode === 'Edit Task'" data-target="#searchProjectsModal">Search</button>
                         </div>
                     </div>
                     <div class="col-md-3"></div>
@@ -81,13 +81,7 @@
                         </div> -->
                     </div>
                 </div>
-
-
-
-
-
-
-                <div class="row">
+                <div class="row"  *ngIf="addTaskForm.controls.IsParentTaskControl.value !== true">
                     <div class="col-md-3"></div>
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="pTask">Parent Task:</label>
@@ -160,7 +154,7 @@
                     <div class="form-group col-md-6">
                         <div class="col-md-4"></div>
                         <div class="col-md-8">
-                            <button type="submit" class="btn btn-md btn-success">Add</button>
+                            <button type="submit" class="btn btn-md btn-success">{{btnMode}}</button>
                             <button type="button" class="btn btn-md btn-danger">Reset</button>
                         </div>
                     </div>

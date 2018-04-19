@@ -77,7 +77,7 @@ export class AddUserComponent implements OnInit {
     }
     getUsers() {
         this.service.getUsers()
-            .subscribe(data => {  this.userList = data; });
+            .subscribe(data => {  this.userList = data; console.log(data); });
     }
 
     confirmDelete(user: Users) {

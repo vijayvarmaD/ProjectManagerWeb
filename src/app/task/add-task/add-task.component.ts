@@ -1,16 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy, NgZone, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { INgxMyDpOptions } from 'ngx-mydatepicker';
 import { ProjectModel, ParentTaskModel, UserModel } from '../../utilities/model';
+import { Subject } from 'rxjs/Subject';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { DataService } from '../../utilities/data.service';
+import { Router } from '@angular/router';
 
 
 @Component({
+    selector: 'add-task', 
     templateUrl: './add-task.component.html',
-    styleUrls: ['./add-task.component.css']
+    styleUrls: ['./add-task.component.css'],
+    changeDetection: ChangeDetectionStrategy.Default
 })
 
 export class AddTaskComponent implements OnInit {
-    pagename = 'add-task';
+    formMode: String = 'Add Task';
+    btnMode: String = 'Add';
+
     selectedProject: string = '';
     selectedUser: string = '';
     selectedTask: string = '';
@@ -35,13 +44,11 @@ export class AddTaskComponent implements OnInit {
     private myForm: FormGroup;
     private addTaskForm: FormGroup;
 
-    constructor(private formBuilder: FormBuilder) { }
-
-    ngOnInit() {
-        // this.myForm = this.formBuilder.group({
-        //     myDate: [null, Validators.required]
-        // });
-
+    constructor(
+        private formBuilder: FormBuilder,
+        private dataService: DataService,
+        private router: Router
+    ) {
         this.addTaskForm = this.formBuilder.group({
             ProjectIdControl: [null, Validators.required],
             TaskNameControl: [null, Validators.required],
@@ -53,17 +60,70 @@ export class AddTaskComponent implements OnInit {
             EndDateControl: [null, Validators.required],
             UserIdControl: [null]
         });
+        // this.dataService.currentMessage.subscribe(message => this.message = message)
+        // // changes the form to edit mode and loads form values
+        // AddTaskComponent.editFormDetails.subscribe(editForm => { 
+        //         this.formMode = 'Edit Task';
+        //         this.btnMode = 'Update';
+        //         console.log(this.formMode)     
+        // });
+
+        // check the route for edit and then subscribe to data service
+        if (this.router.url === '/edittask') {
+            this.dataService.taskMessage.subscribe(editTaskMessage => {
+                if (editTaskMessage !== null) {
+                    let isParent;
+                    if (editTaskMessage.parentId !== null) {
+                        isParent = true;
+                    } else  {
+                        isParent = false;
+                    }
+                    this.formMode = editTaskMessage.formMode;
+                    this.btnMode = editTaskMessage.btnMode;
+                    this.addTaskForm.patchValue({
+                        TaskNameControl: editTaskMessage.task,
+                        PriorityControl: editTaskMessage.priority,
+                        IsParentTaskControl: isParent                           
+                    });
+                    this.setDate(editTaskMessage.startDate, 'StartDateControl');
+                    this.setDate(editTaskMessage.endDate, 'EndDateControl');
+                    this.selectedProject = editTaskMessage.selectedProject;
+                    console.log(this.addTaskForm);
+                }    
+            });
+        }
+        
     }
 
-    setDate(): void {
-        // Set today date using the patchValue function
-        let date = new Date();
-        // this.myForm.patchValue({myDate: {
-        // date: {
-        //     year: date.getFullYear(),
-        //     month: date.getMonth() + 1,
-        //     day: date.getDate()}
-        // }});
+    ngOnInit() {
+        // this.myForm = this.formBuilder.group({
+        //     myDate: [null, Validators.required]
+        // });   
+    }
+
+    setDate(date: String, dateControl: String): void {
+        let getDate = new Date(parseInt(date.substring(6)), parseInt(date.substring(3, 5)) - 1, parseInt(date.substring(0, 2)));
+        if (dateControl == 'StartDateControl') {
+            this.addTaskForm.patchValue({
+                StartDateControl: {
+                    date: {
+                        year: getDate.getFullYear(),
+                        month: getDate.getMonth() + 1,
+                        day: getDate.getDate()
+                    }
+                }
+            });
+        } else if (dateControl == 'EndDateControl') {
+            this.addTaskForm.patchValue({
+                EndDateControl: {
+                    date: {
+                        year: getDate.getFullYear(),
+                        month: getDate.getMonth() + 1,
+                        day: getDate.getDate()
+                    }
+                }
+            });
+        }
     }
 
     clearDate(): void {
@@ -97,5 +157,11 @@ export class AddTaskComponent implements OnInit {
 
     addTaskSubmit() {
         console.log(this.addTaskForm);
+    }
+
+    editMode(editForm) {
+        
+        this.formMode = 'Edit Task';
+        this.btnMode = 'Update';
     }
 }

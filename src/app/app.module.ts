@@ -21,6 +21,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { Interceptor, fakeBackendProvider } from './interceptor/interceptor';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AddUserService } from './user/add-user/add-user.service';
+import { DataService } from './utilities/data.service';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { AddUserService } from './user/add-user/add-user.service';
     HttpClientModule
   ],
   providers: [
-    AddUserService
+    AddUserService,
+    DataService
   ],
   bootstrap: [AppComponent]
 })
