@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 import { AppComponent } from './app.component';
@@ -11,18 +10,16 @@ import { AddProjectComponent } from './project/add-project/add-project.component
 import { NgxMyDatePickerModule } from 'ngx-mydatepicker';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddTaskComponent } from './task/add-task/add-task.component';
-import { ViewTaskComponent } from './task/view-task/view-task.component';
-
-import { DataTableModule } from 'primeng/datatable';
-import { SliderModule } from 'primeng/slider';
-import { GrowlModule } from 'primeng/growl';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-
-import { Interceptor, fakeBackendProvider } from './interceptor/interceptor';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AddUserService } from './user/add-user/add-user.service';
-import { DataService } from './utilities/data.service';
-
+import {DataTableModule} from 'primeng/datatable';
+import {GrowlModule} from 'primeng/growl';
+import { Interceptor, fakeBackendProvider } from './interceptor/interceptor';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {SliderModule} from 'primeng/slider';
+import {CalendarModule} from 'primeng/calendar';
+import { ViewTaskComponent } from './task/view-task/view-task.component';
+import { TaskService } from './utilities/common-service';
 
 @NgModule({
   declarations: [
@@ -34,22 +31,18 @@ import { DataService } from './utilities/data.service';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     IonRangeSliderModule,
-    NgxMyDatePickerModule.forRoot(),
     FormsModule,
     ReactiveFormsModule,
-    DataTableModule,
-    SliderModule,
-    GrowlModule,
-    BrowserAnimationsModule,
-    ConfirmDialogModule,
-    HttpClientModule
+    HttpClientModule,DataTableModule,GrowlModule,ConfirmDialogModule,SliderModule,CalendarModule
   ],
-  providers: [
-    AddUserService,
-    DataService
-  ],
+  providers:[ TaskService, {
+    provide: HTTP_INTERCEPTORS,
+    useClass: Interceptor,
+    multi: true
+}]  ,
   bootstrap: [AppComponent]
 })
 export class AppModule { }

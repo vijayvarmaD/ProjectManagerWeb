@@ -1,50 +1,77 @@
-import { Component } from '@angular/core';
-import { TaskModel, ProjectModel } from '../../utilities/model';
+import { Component, OnInit } from '@angular/core';
 import { AddTaskComponent } from '../add-task/add-task.component';
 import { Router } from '@angular/router';
-import { DataService } from '../../utilities/data.service';
+import { TaskModel } from '../../entities/task';
+import { Project } from '../../entities/project';
+import { ViewTaskService } from './view-task.service';
+import { TaskService } from '../../utilities/common-service';
+import { ConfirmationService, Message } from 'primeng/api';
 
 @Component({
     templateUrl: './view-task.component.html',
-    styleUrls: ['./view-task.component.css']
+    styleUrls: ['./view-task.component.css'],
+    providers: [ ViewTaskService,ConfirmationService]
 })
 
-export class ViewTaskComponent  {
-    tasksList: TaskModel[] = [
-        { taskId: 1, parentId: 1, projectId: 1, task: 'task 1', priority: 25 , startDate: '02/03/2018' , endDate: '02/03/2018', status: 'completed'},
-        { taskId: 1, parentId: 1, projectId: 1, task: 'task 2', priority: 22 , startDate: '02/03/2018' , endDate: '02/03/2018', status: 'completed'},
-    ];
+export class ViewTaskComponent implements OnInit {
+    msgs: Message[] = [];
 
-    projectsList: ProjectModel[] = [
-        { projectId: 1, project:'proj1', startDate: '02/03/2018', endDate: '03/03/2018', priority: 24, manager: 2, managerName: 'john doe'},
-        { projectId: 2, project:'proj2', startDate: '02/03/2018', endDate: '03/03/2018', priority: 12, manager: 1, managerName: 'vijay varma'},
-    ];
+    tasksList: TaskModel[] = [];
 
+    projectsList: Project[] = [];
     selectedProject: String;
     selectedProjectId: Number;
 
-    constructor(private router: Router,private dataService: DataService) {}
-
+    constructor(private router: Router, private taskService:TaskService, private service: ViewTaskService,private confirmationService:ConfirmationService) { }
+    ngOnInit() {
+        this.getAllProject();
+    }
     assignProject(projName, projId) {
         this.selectedProjectId = projId;
         this.selectedProject = projName;
-        // call service to get tasks for the project & assign to tasksList
+        this.getAllTask(projId);
     }
 
-    editTask(taskId) {
+    getAllProject() {
+        this.projectsList = [];
+        this.service.getAllProject()
+            .subscribe(data => { this.projectsList = data; });
+    }
+
+    getAllTask(id: Number) {
+        this.service.getAllTasks()
+            .subscribe(data => {
+                this.tasksList = data.filter(
+                    task => task.Project_ID === id);
+            });
+    }
+    editTask(task: TaskModel) {
+        this.taskService.task=task;
         this.router.navigate(['/edittask']);
-        // this.dataService.changeMessage("Hello from Sibling");
-        let taskBlock = null;
-        this.tasksList.forEach(task => {
-            if (taskId === task.taskId) {
-                let selectedTask = task;
-                taskBlock = task;
-                taskBlock.formMode = 'Edit Task';
-                taskBlock.btnMode = 'Update';
-                taskBlock.selectedProject = this.selectedProject;
-                taskBlock.selectedProjectId = this.selectedProjectId;
+        
+    }
+    endTask(task: TaskModel) {
+  
+        this.confirmationService.confirm({
+            message: 'Are you sure that you want to end this task?',
+            accept: () => {
+                task.Status=false;
+                this.service.updateTask(task)
+                    .subscribe(data => { this.showMessage(data.status.Result, data.status.Message); });
             }
         });
-        this.dataService.sendTaskBlock(taskBlock);
+    }
+
+    showMessage(status: boolean, message: string) {
+        this.msgs = [];
+        if (status === true) {
+            this.msgs.push({ severity: 'success', summary: "Success", detail: message });
+        }
+        else {
+            this.msgs.push({ severity: 'error', summary: "Error", detail: message });
+
+        }
+        this.getAllTask(this.selectedProjectId);
+
     }
 }

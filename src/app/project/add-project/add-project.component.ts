@@ -1,157 +1,143 @@
 import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { INgxMyDpOptions } from 'ngx-mydatepicker';
-import { ProjectModel, UserModel } from '../../utilities/model';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { Project } from '../../entities/project';
+import { Users } from '../../entities/users';
+import { AddProjectService } from './add-project.service';
+import { Message, ConfirmationService } from 'primeng/api';
+import { DatePipe } from '@angular/common';
 
 @Component({
     templateUrl: './add-project.component.html',
-    styleUrls: ['./add-project.component.css']
+    styleUrls: ['./add-project.component.css'],
+    providers: [AddProjectService,ConfirmationService,DatePipe]
 })
 
-export class AddProjectComponent implements OnInit  {
-    projectsList: ProjectModel[] = [
-        { projectId: 1, project:'proj1', startDate: '02/03/2018', endDate: '03/03/2018', priority: 24, manager: 2, managerName: 'john doe'},
-        { projectId: 2, project:'proj2', startDate: '02/03/2018', endDate: '03/03/2018', priority: 12, manager: 1, managerName: 'vijay varma'},
-    ];
-    usersList: UserModel[] = [
-        { userId: 1, firstName:'vijay', lastName: 'varma', employeeId: 345, projectId: 1, taskId: 1},
-        { userId: 2, firstName:'john', lastName: 'doe', employeeId: 234, projectId: 2, taskId: 2},
-    ];
-    myOptions: INgxMyDpOptions = {
-        dateFormat: 'dd/mm/yyyy',
-    };
+export class AddProjectComponent implements OnInit {
+    msgs: Message[] = [];
+    projectsList: Project[];
+    usersList: Users[];
+    startDate:Date;
     public addOrUpdateBtn: string = 'Add';
 
-    // selection variables - for holding selected values from view list
-    mgrName: string = null;
-    selectedManagerId: string = '';
-    selectedProjectId: Number = null;
 
     private addProjectForm: FormGroup;
 
-    constructor(private formBuilder: FormBuilder) { 
-        console.log(this.usersList);   
+    constructor(private formBuilder: FormBuilder, private service: AddProjectService, private confirmationService: ConfirmationService,private datePipe: DatePipe) {
     }
 
     ngOnInit() {
+
+        this.formInit();
+        this.getUsers();
+        this.getAllProject();
+
+    }
+    formInit()
+    {
         this.addProjectForm = this.formBuilder.group({
+            projectId: [0, Validators.required],
             projectNameControl: [null, Validators.required],
             checkDatesControl: [null],
-            startDateControl: [null],
-            endDateControl: [null],
+            startDateControl: [this.datePipe.transform(Date.now(),'MM/dd/yyyy').toString()],
+            endDateControl: [this.datePipe.transform(Date.now()+86400000,'MM/dd/yyyy').toString()],
+            status: ["Active"],
             priorityControl: [null, Validators.required],
             selectedManagerControl: [null, Validators.required],
+            selectedManagerName: [null, Validators.required],
             priorityDisplayControl: [null]
-        });  
-        // console.log(this.addProjectForm);  
+        });
     }
 
-    addProjectSubmit() {
-        console.log(this.addProjectForm);
+    getUsers() {
+        this.usersList = [];
+        this.service.getUsers()
+            .subscribe(data => { this.usersList = data; });
     }
+    getAllProject() {
+        this.projectsList = [];
+        this.service.getAllProject()
+            .subscribe(data => { this.projectsList = data; });
+    }
+
+
+    updateProject(project: Project) {
+        this.addOrUpdateBtn = 'Update';
+        this.addProjectForm = this.formBuilder.group({
+            projectId: [project.Project_ID, Validators.required],
+            projectNameControl: [project.ProjectName, Validators.required],
+            checkDatesControl: [project.End_Date === null && project.Start_Date === null ? false : true],
+            startDateControl: [this.datePipe.transform(project.Start_Date,'MM/dd/yyyy').toString()],
+            endDateControl:  [this.datePipe.transform(project.End_Date,'MM/dd/yyyy').toString()],
+            status: [project.Status],
+            priorityControl: [project.Priority, Validators.required],
+            selectedManagerControl: [project.Manager_ID, Validators.required],
+            selectedManagerName: [project.Manager_Name, Validators.required],
+            priorityDisplayControl: [null]
+        });
+
+    }
+
+    showMessage(status: boolean, message: string) {
+        this.msgs = [];
+        if (status === true) {
+            this.msgs.push({ severity: 'success', summary: "Success", detail: message });
+        }
+        else {
+            this.msgs.push({ severity: 'error', summary: "Error", detail: message });
+
+        }
+        this.addProjectReset();
+
+    }
+
+
 
     addProjectReset() {
         this.addProjectForm.reset();
+        this.formInit();
         this.addOrUpdateBtn = 'Add';
     }
 
-    updateProject(projName) {
-        let selectedProject = null;
-        let dateCheckBox = true;
-        this.projectsList.forEach(proj => {
-            if (proj.project == projName) {
-                selectedProject = proj;
+    addProjectSubmit() {
+
+        this.service.updateProject({
+            Project_ID: this.addProjectForm.get('projectId').value,
+            End_Date: this.addProjectForm.get('endDateControl').value,
+            Start_Date: this.addProjectForm.get('startDateControl').value,
+            Manager_ID: this.addProjectForm.get('selectedManagerControl').value,
+            Priority: this.addProjectForm.get('priorityControl').value,
+            ProjectName: this.addProjectForm.get('projectNameControl').value,
+            Status: this.addProjectForm.get('status').value
+        })
+            .subscribe(data => { this.showMessage(data.status.Result, data.status.Message); });
+
+    }
+
+
+
+    assignManager(userId: number, mgrName: string) {
+
+        this.addProjectForm.patchValue({
+            selectedManagerControl: userId,
+            selectedManagerName: mgrName
+        });
+    }
+
+    suspendProject(project: Project) {
+  
+        this.confirmationService.confirm({
+            message: 'Are you sure that you want to suspend project : ' + project.ProjectName + '?',
+            accept: () => {
+                project.Status="Suspended";
+                this.service.updateProject(project)
+                    .subscribe(data => { this.showMessage(data.status.Result, data.status.Message); });
             }
         });
-        this.addProjectForm.reset();
-        this.addOrUpdateBtn = 'Update';
-        if (selectedProject.startDate == null && selectedProject.endDate == null) {
-            dateCheckBox =  false;
-        }
-        this.addProjectForm.setValue({
-            projectNameControl: selectedProject.project,
-            checkDatesControl: dateCheckBox,
-            startDateControl: null,
-            endDateControl: null,
-            priorityControl: selectedProject.priority,
-            selectedManagerControl: selectedProject.manager,
-            priorityDisplayControl: selectedProject.priority
-        });
-        this.setDate(selectedProject.startDate, 'startDateControl');
-        this.setDate(selectedProject.endDate, 'endDateControl');
-        // selection varaible
-        this.selectedProjectId = selectedProject.projectId;
-        
     }
 
-    setDate(date: String, dateControl: String): void {
-        let getDate = new Date(parseInt(date.substring(6)), parseInt(date.substring(3, 5)) - 1, parseInt(date.substring(0, 2)));
-        if (dateControl == 'startDateControl') {
-            this.addProjectForm.patchValue({
-                startDateControl: {
-                    date: {
-                        year: getDate.getFullYear(),
-                        month: getDate.getMonth() + 1,
-                        day: getDate.getDate()
-                    }
-                }
-            });
-        } else if (dateControl == 'endDateControl') {
-            this.addProjectForm.patchValue({
-                endDateControl: {
-                    date: {
-                        year: getDate.getFullYear(),
-                        month: getDate.getMonth() + 1,
-                        day: getDate.getDate()
-                    }
-                }
-            });
-        }
-    }
-
-    // setDate(): void {
-    //     // Set today date using the patchValue function
-    //     let date = new Date();
-    //     console.log(date);
-    //     this.addProjectForm.patchValue({startDateControl: {
-    //     date: {
-    //         year: date.getFullYear(),
-    //         month: date.getMonth() + 1,
-    //         day: date.getDate()}
-    //     }});
-    //     console.log(date);
-    // }
-
-    // clearDate(): void {
-    //     // Clear the date using the patchValue function
-    //     this.addProjectForm.patchValue({myDate: null});
-    // }
 
 
-    // slider controls
-    sliderOnChange(event) {
 
-    }
 
-    sliderOnFinish(event) {
-        
-    }
-
-    sliderOnUpdate(event) {
-        
-    }
-   
-
-    assignManager(userId, mgrName, empId) {
-        this.selectedManagerId = userId;
-        this.mgrName = mgrName;
-        this.addProjectForm.patchValue({
-            selectedManagerControl: userId
-        });
-    }
-
-    suspendProject(projId) {
-
-    }
 
 }

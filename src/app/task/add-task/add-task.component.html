@@ -1,3 +1,4 @@
+<p-growl [(value)]="msgs" [life]="3000" [sticky]="false"></p-growl>
 <div class="container">
     <div class="row">
         <div class="panel panel-default">
@@ -34,25 +35,14 @@
                     <div class="col-md-6">
                         <div class="checkbox checkbox-padding">
                             <label>
-                                <input type="checkbox" value="" name="IsParentTaskControl" formControlName="IsParentTaskControl">Parent Task</label>
+                                <input type="checkbox" value="" name="IsParentTaskControl" (change)="handleChange($event)" formControlName="IsParentTaskControl">Parent Task</label>
                         </div>
                     </div>
                     <div class="col-md-1"></div>
                 </div>
-                <!-- <div class="row">
-                    <div class="col-md-3"></div>
-                    <div class="form-group col-md-6">
-                        <label class="control-label col-sm-4">Priority:</label>
-                        <div class="col-sm-8">
-                            <ion-range-slider #sliderElement type="single" [min]="0" max="30" grid="true" grid_num="3" prefix="Priority: " (onUpdate)="myOnUpdate($event)"
-                                (onChange)="myOnChange($event)" (onFinish)="myOnFinish($event)">
-                            </ion-range-slider>
-                        </div>
-                    </div>
-                    <div class="col-md-3"></div>
-                </div> -->
+           
 
-                <div class="row">
+                <div class="row" *ngIf="addTaskForm.controls.IsParentTaskControl.value !== true">
                     <div class="col-md-3"></div>
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4">Priority:</label>
@@ -94,43 +84,29 @@
                     </div>
                     <div class="col-md-3"></div>
                 </div>
-                <div class="row">
+                <div class="row" *ngIf="addTaskForm.controls.IsParentTaskControl.value !== true">
                     <div class="col-md-3"></div>
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="startDate">Start Date:</label>
                         <div class="col-md-8">
                             <div class="input-group">
-                                <input class="form-control" style="float:none" placeholder="Select a date" ngx-mydatepicker name="StartDateControl" formControlName="StartDateControl"
-                                    [options]="myOptions" #dp1="ngx-mydatepicker" />
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" (click)="dp1.clearDate()">
-                                        <i class="glyphicon glyphicon-remove"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-default" (click)="dp1.toggleCalendar()">
-                                        <i class="glyphicon glyphicon-calendar"></i>
-                                    </button>
-                                </span>
+                                    <p-calendar  name="StartDateControl" formControlName="StartDateControl"   [showIcon]="true"></p-calendar>
+
+                           
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="row">
+                <div class="row" *ngIf="addTaskForm.controls.IsParentTaskControl.value !== true">
                     <div class="col-md-3"></div>
                     <div class="form-group col-md-6">
                         <label class="control-label col-sm-4" for="endDate">End Date:</label>
                         <div class="col-md-8">
                             <div class="input-group">
-                                <input class="form-control" style="float:none" placeholder="Select a date" ngx-mydatepicker name="EndDateControl" formControlName="EndDateControl"
-                                    [options]="myOptions" #dp="ngx-mydatepicker" />
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" (click)="dp.clearDate()">
-                                        <i class="glyphicon glyphicon-remove"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-default" (click)="dp.toggleCalendar()">
-                                        <i class="glyphicon glyphicon-calendar"></i>
-                                    </button>
-                                </span>
+                                    <p-calendar  name="EndDateControl" formControlName="EndDateControl"   [showIcon]="true"></p-calendar>
+
+                                
                             </div>
                         </div>
                     </div>
@@ -154,8 +130,8 @@
                     <div class="form-group col-md-6">
                         <div class="col-md-4"></div>
                         <div class="col-md-8">
-                            <button type="submit" class="btn btn-md btn-success">{{btnMode}}</button>
-                            <button type="button" class="btn btn-md btn-danger">Reset</button>
+                            <button type="submit" [disabled]="addTaskForm.invalid" class="btn btn-md btn-success">{{btnMode}}</button>
+                            <button type="button" (click)="clearDate()"  class="btn btn-md btn-danger">Reset</button>
                         </div>
                     </div>
                     <div class="col-md-3"></div>
@@ -179,16 +155,20 @@
                 <div class="row">
                     <div class="col-md-12">
                         <p-dataTable [value]="projectsList">
-                            <p-column field="projectId" header="Project ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="project" header="Project Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="startDate" header="Start Date" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="endDate" header="End Date" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="priority" header="Priority" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="managerName" header="Manager" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>                            
+                            <p-column field="Project_ID" header="Project ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="ProjectName" header="Project Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="Start_Date" header="Start Date" sortable="true" [filter]="true" filterMatchMode="contains"> <ng-template let-col let-project="rowData" let-ri="rowIndex" pTemplate="body">
+                                <span>{{project[col.field]|date:'dd/MM/yyyy'}}</span>
+                            </ng-template></p-column>
+                            <p-column field="End_Date" header="End Date" sortable="true" [filter]="true" filterMatchMode="contains"> <ng-template let-col let-project="rowData" let-ri="rowIndex" pTemplate="body">
+                                <span>{{project[col.field]|date:'dd/MM/yyyy'}}</span>
+                            </ng-template></p-column>
+                            <p-column field="Priority" header="Priority" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="Manager_Name" header="Manager" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>                            
                             <p-column>
                                 <ng-template let-project="rowData" pTemplate="body">
                                     <div align="center">
-                                        <button type="button" class="btn btn-success btn-sm" id="assignProject" (click)="selectProject(project.project, project.projectId)" data-dismiss="modal">Select</button>
+                                        <button type="button" class="btn btn-success btn-sm" id="assignProject" (click)="selectProject(project.ProjectName, project.Project_ID)" data-dismiss="modal">Select</button>
                                     </div>
                                 </ng-template>
                             </p-column>
@@ -216,12 +196,12 @@
                 <div class="row">
                     <div class="col-md-12">
                         <p-dataTable [value]="parentTasksList">
-                            <p-column field="parentId" header="Parent ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="parentTask" header="Parent Task Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="Parent_ID" header="Parent ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="Parent_Name" header="Parent Task Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
                             <p-column>
                                 <ng-template let-pTask="rowData" pTemplate="body">
                                     <div align="center">
-                                        <button type="button" class="btn btn-success btn-sm" id="assignProject" (click)="selectPTask(pTask.parentTask, pTask.parentId)"
+                                        <button type="button" class="btn btn-success btn-sm" id="assignProject" (click)="selectPTask(pTask.Parent_ID, pTask.Parent_Name)"
                                             data-dismiss="modal">Select</button>
                                     </div>
                                 </ng-template>
@@ -252,15 +232,15 @@
                 <div class="row">
                     <div class="col-md-12">
                         <p-dataTable [value]="usersList">
-                            <p-column field="userId" header="User ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="firstName" header="First Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="lastName" header="Last Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="employeeId" header="Employee ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="projectId" header="Project ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
-                            <p-column field="taskId" header="Task ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="User_ID" header="User ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="First_Name" header="First Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="Last_Name" header="Last Name" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="Employee_ID" header="Employee ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                            <p-column field="Project_ID" header="Project ID" sortable="true" [filter]="true" filterMatchMode="contains"></p-column>
+                          
                             <p-column>
                                 <ng-template let-user="rowData" pTemplate="body">
-                                    <button type="button" class="btn btn-success btn-sm" id="assignUser" (click)="assignUser(user.userId, user.firstName + ' ' + user.lastName)" data-dismiss="modal">Assign</button>
+                                    <button type="button" class="btn btn-success btn-sm" id="assignUser" (click)="assignUser(user.User_ID, user.First_Name + ' ' + user.Last_Name)" data-dismiss="modal">Assign</button>
                                 </ng-template>
                             </p-column>
                         </p-dataTable>
